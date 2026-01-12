@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento Seguro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.pagsmile.com/sdk/pagsmile.min.js"></script>
+  <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Ambient background -->
+    <div class="ambient-bg">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <main class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="url(#logo-gradient)"/>
+            <path d="M10 16L14 20L22 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32">
+                <stop stop-color="#c9a227"/>
+                <stop offset="1" stop-color="#8b7019"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Pagamento Seguro</span>
+        </div>
+        <div class="security-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>Ambiente Seguro</span>
+        </div>
+      </header>
+
+      <!-- Payment Card Preview -->
+      <div class="card-preview" aria-hidden="true">
+        <div class="card-face">
+          <div class="card-chip">
+            <svg width="36" height="28" viewBox="0 0 36 28" fill="none">
+              <rect x="0.5" y="0.5" width="35" height="27" rx="3.5" stroke="#c9a227" stroke-opacity="0.5"/>
+              <rect x="4" y="8" width="10" height="12" rx="1" fill="#c9a227" fill-opacity="0.3"/>
+              <rect x="16" y="8" width="10" height="12" rx="1" fill="#c9a227" fill-opacity="0.2"/>
+            </svg>
+          </div>
+          <div class="card-number-preview" id="card-number-preview">•••• •••• •••• ••••</div>
+          <div class="card-details-preview">
+            <div class="card-holder-preview">
+              <span class="label">Titular</span>
+              <span class="value" id="card-holder-preview">SEU NOME</span>
+            </div>
+            <div class="card-expiry-preview">
+              <span class="label">Validade</span>
+              <span class="value" id="card-expiry-preview">MM/AA</span>
+            </div>
+          </div>
+          <div class="card-brand" id="card-brand-preview">
+            <svg width="48" height="32" viewBox="0 0 48 32" fill="none">
+              <rect width="48" height="32" rx="4" fill="rgba(255,255,255,0.1)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <form id="payment-form" class="payment-form" novalidate>
+        <!-- Amount Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Valor do Pagamento</legend>
+          <div class="amount-row">
+            <div class="form-field amount-field">
+              <label for="order-amount" class="field-label">Valor</label>
+              <div class="input-wrapper amount-input-wrapper">
+                <span class="currency-symbol">R$</span>
+                <input
+                  type="text"
+                  id="order-amount"
+                  name="orderAmount"
+                  inputmode="decimal"
+                  placeholder="0,00"
+                  required
+                  aria-describedby="amount-hint"
+                >
+              </div>
+              <span id="amount-hint" class="field-hint">Mínimo R$ 1,00</span>
+            </div>
+            <div class="form-field installments-field">
+              <label for="installments" class="field-label">Parcelas</label>
+              <div class="select-wrapper">
+                <select id="installments" name="installments">
+                  <option value="1">1x sem juros</option>
+                  <option value="2">2x sem juros</option>
+                  <option value="3">3x sem juros</option>
+                  <option value="4">4x sem juros</option>
+                  <option value="5">5x sem juros</option>
+                  <option value="6">6x sem juros</option>
+                  <option value="7">7x</option>
+                  <option value="8">8x</option>
+                  <option value="9">9x</option>
+                  <option value="10">10x</option>
+                  <option value="11">11x</option>
+                  <option value="12">12x</option>
+                </select>
+                <svg class="select-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Card Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Dados do Cartão</legend>
+
+          <div class="form-field">
+            <label for="card-number" class="field-label">Número do Cartão</label>
+            <div class="input-wrapper card-input">
+              <input
+                type="text"
+                id="card-number"
+                name="cardNumber"
+                inputmode="numeric"
+                autocomplete="cc-number"
+                placeholder="0000 0000 0000 0000"
+                maxlength="19"
+                required
+                aria-describedby="card-number-error"
+              >
+              <div class="card-icon" id="detected-brand"></div>
+            </div>
+            <span id="card-number-error" class="field-error" role="alert"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="card-name" class="field-label">Nome no Cartão</label>
+            <input
+              type="text"
+              id="card-name"
+              name="cardName"
+              autocomplete="cc-name"
+              placeholder="Como está impresso no cartão"
+              required
+              aria-describedby="card-name-error"
+            >
+            <span id="card-name-error" class="field-error" role="alert"></span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="field-label">Validade</label>
+              <div class="expiry-fields">
+                <div class="select-wrapper">
+                  <select id="exp-month" name="expMonth" autocomplete="cc-exp-month" required aria-label="Mês de validade">
+                    <option value="">Mês</option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  <svg class="select-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <span class="expiry-separator">/</span>
+                <div class="select-wrapper">
+                  <select id="exp-year" name="expYear" autocomplete="cc-exp-year" required aria-label="Ano de validade">
+                    <option value="">Ano</option>
+                  </select>
+                  <svg class="select-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="form-field cvv-field">
+              <label for="card-cvv" class="field-label">
+                CVV
+                <button type="button" class="cvv-help" aria-label="O que é CVV?">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M7 10V7M7 4.5V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </label>
+              <input
+                type="text"
+                id="card-cvv"
+                name="cvv"
+                inputmode="numeric"
+                autocomplete="cc-csc"
+                placeholder="•••"
+                maxlength="4"
+                required
+                aria-describedby="cvv-error"
+              >
+              <span id="cvv-error" class="field-error" role="alert"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Customer Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Dados do Pagador</legend>
+
+          <div class="form-field">
+            <label for="customer-cpf" class="field-label">CPF</label>
+            <input
+              type="text"
+              id="customer-cpf"
+              name="cpf"
+              inputmode="numeric"
+              placeholder="000.000.000-00"
+              maxlength="14"
+              required
+              aria-describedby="cpf-error"
+            >
+            <span id="cpf-error" class="field-error" role="alert"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="customer-email" class="field-label">E-mail</label>
+            <input
+              type="email"
+              id="customer-email"
+              name="email"
+              autocomplete="email"
+              placeholder="seu@email.com"
+              required
+              aria-describedby="email-error"
+            >
+            <span id="email-error" class="field-error" role="alert"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="customer-phone" class="field-label">Telefone</label>
+            <input
+              type="tel"
+              id="customer-phone"
+              name="phone"
+              autocomplete="tel"
+              placeholder="(00) 00000-0000"
+              maxlength="15"
+              required
+              aria-describedby="phone-error"
+            >
+            <span id="phone-error" class="field-error" role="alert"></span>
+          </div>
+        </fieldset>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span class="btn-text">Pagar</span>
+          <span class="btn-amount" id="btn-amount"></span>
+          <svg class="btn-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- 3DS Challenge Modal -->
+      <div id="threeds-modal" class="modal" role="dialog" aria-labelledby="threeds-title" aria-modal="true" hidden>
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="threeds-title">Verificação de Segurança</h2>
+            <p class="modal-subtitle">Complete a verificação do seu banco para continuar</p>
+          </div>
+          <div class="threeds-container">
+            <iframe id="threeds-iframe" title="Verificação 3D Secure"></iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="cancel-btn" id="cancel-threeds">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Overlay -->
+      <div id="status-overlay" class="status-overlay" hidden>
+        <!-- Processing State -->
+        <div id="status-processing" class="status-content" hidden>
+          <div class="spinner">
+            <svg viewBox="0 0 50 50">
+              <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="80 40"/>
+            </svg>
+          </div>
+          <h2 class="status-title">Processando pagamento</h2>
+          <p class="status-message">Aguarde enquanto processamos sua transação...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="status-success" class="status-content" hidden>
+          <div class="status-icon success-icon">
+            <svg viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path class="checkmark" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 27l7 7 17-17"/>
+            </svg>
+          </div>
+          <h2 class="status-title">Pagamento aprovado!</h2>
+          <p class="status-message">Sua transação foi processada com sucesso.</p>
+          <div class="status-details">
+            <div class="detail-row">
+              <span class="detail-label">Número da transação</span>
+              <span class="detail-value" id="success-trade-no">-</span>
+            </div>
+          </div>
+          <button type="button" class="primary-btn" id="new-payment-btn">Novo Pagamento</button>
+        </div>
+
+        <!-- Error State -->
+        <div id="status-error" class="status-content" hidden>
+          <div class="status-icon error-icon">
+            <svg viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M18 18l16 16M34 18l-16 16"/>
+            </svg>
+          </div>
+          <h2 class="status-title">Pagamento recusado</h2>
+          <p class="status-message" id="error-message">Ocorreu um erro ao processar seu pagamento.</p>
+          <button type="button" class="primary-btn" id="retry-btn">Tentar novamente</button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-badges">
+          <div class="badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <span>Criptografia SSL</span>
+          </div>
+          <div class="badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <span>PCI DSS Compliant</span>
+          </div>
+        </div>
+        <p class="footer-text">Processado por Pagsmile</p>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="./frontend.ts"></script>
+</body>
+</html>
