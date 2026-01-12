@@ -41,7 +41,7 @@ const getClientIp = (request: Request): string => {
 };
 
 Bun.serve({
-  port: 3001,
+  port: Bun.env.PORT ?? 3000,
   routes: {
     "/": index,
 
