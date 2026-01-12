@@ -49,8 +49,7 @@ export interface Customer {
 
 export interface Address {
   zip_code?: string;
-  street_name?: string;
-  street_number?: string;
+  address?: string;
   city?: string;
   state?: string;
 }

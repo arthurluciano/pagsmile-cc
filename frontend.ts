@@ -38,6 +38,12 @@ interface OrderData {
       number: string;
     };
   };
+  address: {
+    zip_code: string;
+    city: string;
+    state: string;
+    address: string;
+  };
   installments: string;
 }
 
@@ -76,6 +82,12 @@ const formatCPF = (value: string): string => {
   if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
   if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
   return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
+};
+
+const formatZipCode = (value: string): string => {
+  const numbers = value.replace(/\D/g, "");
+  if (numbers.length <= 5) return numbers;
+  return `${numbers.slice(0, 5)}-${numbers.slice(5, 8)}`;
 };
 
 const formatPhone = (value: string): string => {
@@ -166,6 +178,10 @@ class PaymentApp {
     cpf: document.getElementById("customer-cpf") as HTMLInputElement,
     email: document.getElementById("customer-email") as HTMLInputElement,
     phone: document.getElementById("customer-phone") as HTMLInputElement,
+    zipCode: document.getElementById("address-zipcode") as HTMLInputElement,
+    street: document.getElementById("address-street") as HTMLInputElement,
+    city: document.getElementById("address-city") as HTMLInputElement,
+    state: document.getElementById("address-state") as HTMLSelectElement,
     amount: document.getElementById("order-amount") as HTMLInputElement,
     installments: document.getElementById("installments") as HTMLSelectElement,
     detectedBrand: document.getElementById("detected-brand") as HTMLDivElement,
@@ -246,6 +262,11 @@ class PaymentApp {
     this.elements.phone.addEventListener("input", (e) => {
       const input = e.target as HTMLInputElement;
       input.value = formatPhone(input.value);
+    });
+
+    this.elements.zipCode.addEventListener("input", (e) => {
+      const input = e.target as HTMLInputElement;
+      input.value = formatZipCode(input.value);
     });
 
     this.elements.amount.addEventListener("input", (e) => {
@@ -351,6 +372,26 @@ class PaymentApp {
       setError(this.elements.phone, "phone-error", "Telefone inválido");
     }
 
+    clearError(this.elements.zipCode, "zipcode-error");
+    const zipCodeNumbers = this.elements.zipCode.value.replace(/\D/g, "");
+    if (zipCodeNumbers.length !== 8) {
+      setError(this.elements.zipCode, "zipcode-error", "CEP inválido");
+    }
+
+    clearError(this.elements.street, "street-error");
+    if (this.elements.street.value.trim().length < 5) {
+      setError(this.elements.street, "street-error", "Endereço inválido");
+    }
+
+    clearError(this.elements.city, "city-error");
+    if (this.elements.city.value.trim().length < 2) {
+      setError(this.elements.city, "city-error", "Cidade inválida");
+    }
+
+    if (!this.elements.state.value) {
+      isValid = false;
+    }
+
     const amount = parseFloat(parseAmount(this.elements.amount.value));
     if (amount < 1) {
       isValid = false;
@@ -395,7 +436,7 @@ class PaymentApp {
       orderAmount: parseAmount(this.elements.amount.value),
       subject: "Pagamento via cartão de crédito",
       content: "Pagamento processado via Pagsmile",
-      buyerId: `buyer_${Date.now()}`,
+      buyerId: this.elements.email.value,
       customer: {
         name: this.elements.cardName.value,
         email: this.elements.email.value,
@@ -404,6 +445,12 @@ class PaymentApp {
           type: "CPF",
           number: this.elements.cpf.value.replace(/\D/g, ""),
         },
+      },
+      address: {
+        zip_code: this.elements.zipCode.value.replace(/\D/g, ""),
+        city: this.elements.city.value,
+        state: this.elements.state.value,
+        address: this.elements.street.value,
       },
       installments: this.elements.installments.value,
     };
@@ -414,12 +461,14 @@ class PaymentApp {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        method: "CreditCard",
         orderAmount: data.orderAmount,
         orderCurrency: "BRL",
         subject: data.subject,
         content: data.content,
         buyerId: data.buyerId,
         customer: data.customer,
+        address: data.address,
       }),
     });
 

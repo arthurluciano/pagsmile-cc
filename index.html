@@ -265,6 +265,95 @@
           </div>
         </fieldset>
 
+        <!-- Address Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Endereço de Cobrança</legend>
+
+          <div class="form-field">
+            <label for="address-zipcode" class="field-label">CEP</label>
+            <input
+              type="text"
+              id="address-zipcode"
+              name="zipCode"
+              inputmode="numeric"
+              autocomplete="postal-code"
+              placeholder="00000-000"
+              maxlength="9"
+              required
+              aria-describedby="zipcode-error"
+            >
+            <span id="zipcode-error" class="field-error" role="alert"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="address-street" class="field-label">Endereço</label>
+            <input
+              type="text"
+              id="address-street"
+              name="street"
+              autocomplete="street-address"
+              placeholder="Av Paulista, 1000"
+              required
+              aria-describedby="street-error"
+            >
+            <span id="street-error" class="field-error" role="alert"></span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="address-city" class="field-label">Cidade</label>
+              <input
+                type="text"
+                id="address-city"
+                name="city"
+                autocomplete="address-level2"
+                placeholder="São Paulo"
+                required
+                aria-describedby="city-error"
+              >
+              <span id="city-error" class="field-error" role="alert"></span>
+            </div>
+            <div class="form-field">
+              <label for="address-state" class="field-label">Estado</label>
+              <div class="select-wrapper">
+                <select id="address-state" name="state" autocomplete="address-level1" required aria-label="Estado">
+                  <option value="">UF</option>
+                  <option value="AC">AC</option>
+                  <option value="AL">AL</option>
+                  <option value="AP">AP</option>
+                  <option value="AM">AM</option>
+                  <option value="BA">BA</option>
+                  <option value="CE">CE</option>
+                  <option value="DF">DF</option>
+                  <option value="ES">ES</option>
+                  <option value="GO">GO</option>
+                  <option value="MA">MA</option>
+                  <option value="MT">MT</option>
+                  <option value="MS">MS</option>
+                  <option value="MG">MG</option>
+                  <option value="PA">PA</option>
+                  <option value="PB">PB</option>
+                  <option value="PR">PR</option>
+                  <option value="PE">PE</option>
+                  <option value="PI">PI</option>
+                  <option value="RJ">RJ</option>
+                  <option value="RN">RN</option>
+                  <option value="RS">RS</option>
+                  <option value="RO">RO</option>
+                  <option value="RR">RR</option>
+                  <option value="SC">SC</option>
+                  <option value="SP">SP</option>
+                  <option value="SE">SE</option>
+                  <option value="TO">TO</option>
+                </select>
+                <svg class="select-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
         <!-- Submit Button -->
         <button type="submit" class="submit-btn" id="submit-btn">
           <span class="btn-text">Pagar</span>
