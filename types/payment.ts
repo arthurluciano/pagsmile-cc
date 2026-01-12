@@ -49,7 +49,7 @@ export interface Customer {
 
 export interface Address {
   zip_code?: string;
-  street?: string;
+  street_name?: string;
   street_number?: string;
   city?: string;
   state?: string;
@@ -66,13 +66,18 @@ export interface PaymentState {
 }
 
 export interface CreateOrderRequest {
+  method: PaymentMethod;
   orderAmount: string;
   orderCurrency: OrderCurrency;
   subject: string;
   content: string;
   buyerId: string;
-  customer?: Partial<Customer>;
-  returnUrl?: string;
+  customer: Customer;
+  address?: Address;
+  deviceInfo?: {
+    userAgent: string;
+    ipAddress: string;
+  };
   timeoutExpress?: string;
 }
 

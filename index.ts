@@ -32,6 +32,7 @@ const pagsmileClient = createPagsmileClient({
   securityKey: PAGSMILE_SECURITY_KEY,
   env: PAGSMILE_ENV,
   notifyUrl: `${BASE_URL}/api/webhooks/pagsmile`,
+  returnUrl: `${BASE_URL}/`,
 });
 
 const jsonResponse = (data: unknown, status = 200) =>
@@ -82,16 +83,24 @@ Bun.serve({
           return errorResponse("Invalid request body", 400);
         }
 
+        const userIp = getClientIp(request);
+        const deviceUserAgent = request.headers.get("user-agent") ?? "Unknown";
+
         try {
           const result = await pagsmileClient.createOrder({
             outTradeNo,
+            method: body.method ?? "CreditCard",
             orderAmount: body.orderAmount,
             orderCurrency: body.orderCurrency,
             subject: body.subject,
             content: body.content,
             buyerId: body.buyerId,
-            returnUrl: body.returnUrl,
             customer: body.customer,
+            address: body.address,
+            deviceInfo: {
+              userAgent: deviceUserAgent,
+              ipAddress: userIp,
+            },
             timeoutExpress: body.timeoutExpress,
           });
 
@@ -179,7 +188,6 @@ Bun.serve({
             address: body.address,
             installments: body.installments,
             deviceUserAgent,
-            returnUrl: body.returnUrl,
             region: "BRA",
           });
 

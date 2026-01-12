@@ -17,6 +17,12 @@ interface PagsmileClientConfig {
   securityKey: string;
   env: PagsmileEnvironment;
   notifyUrl: string;
+  returnUrl?: string;
+}
+
+interface DeviceInfo {
+  userAgent: string;
+  ipAddress: string;
 }
 
 const createAuthHeader = (appId: string, securityKey: string): string => {
@@ -26,7 +32,7 @@ const createAuthHeader = (appId: string, securityKey: string): string => {
 };
 
 export const createPagsmileClient = (config: PagsmileClientConfig) => {
-  const { appId, securityKey, env, notifyUrl } = config;
+  const { appId, securityKey, env, notifyUrl, returnUrl } = config;
   const endpoints = PAGSMILE_ENDPOINTS[env];
   const authHeader = createAuthHeader(appId, securityKey);
 
@@ -37,30 +43,45 @@ export const createPagsmileClient = (config: PagsmileClientConfig) => {
 
   const createOrder = async (params: {
     outTradeNo: string;
+    method: PaymentMethod;
     orderAmount: string;
     orderCurrency: OrderCurrency;
     subject: string;
     content: string;
     buyerId: string;
-    returnUrl?: string;
-    customer?: Partial<Customer>;
+    customer: Customer;
+    address?: Address;
+    deviceInfo?: DeviceInfo;
     timeoutExpress?: string;
   }): Promise<CreateOrderResponse> => {
     const body = {
       app_id: appId,
       out_trade_no: params.outTradeNo,
+      method: params.method,
       order_amount: params.orderAmount,
       order_currency: params.orderCurrency,
       subject: params.subject,
       content: params.content,
+      trade_type: "API",
       timestamp: formatPagsmileTimestamp(),
       notify_url: notifyUrl,
-      buyer_id: params.buyerId,
-      trade_type: "WEB",
+      return_url: returnUrl,
+      timeout_express: params.timeoutExpress ?? "1d",
       version: "2.0",
-      return_url: params.returnUrl,
-      customer: params.customer,
-      timeout_express: params.timeoutExpress ?? "90m",
+      buyer_id: params.buyerId,
+      customer: {
+        identify: params.customer.identify,
+        name: params.customer.name,
+        email: params.customer.email,
+        phone: params.customer.phone,
+      },
+      address: params.address,
+      device_info: params.deviceInfo
+        ? {
+            user_agent: params.deviceInfo.userAgent,
+            ip_address: params.deviceInfo.ipAddress,
+          }
+        : undefined,
     };
 
     const response = await fetch(`${endpoints.gateway}/trade/create`, {
@@ -88,7 +109,6 @@ export const createPagsmileClient = (config: PagsmileClientConfig) => {
     threeds?: ThreeDSData;
     deviceUserAgent?: string;
     websiteUrl?: string;
-    returnUrl?: string;
     region?: string;
   }): Promise<PaymentResponse> => {
     const body = {
@@ -96,6 +116,7 @@ export const createPagsmileClient = (config: PagsmileClientConfig) => {
       method: params.method,
       out_trade_no: params.outTradeNo,
       notify_url: notifyUrl,
+      return_url: returnUrl,
       timestamp: formatPagsmileTimestamp(),
       subject: params.subject,
       content: params.content,
@@ -110,7 +131,6 @@ export const createPagsmileClient = (config: PagsmileClientConfig) => {
       threeds: params.threeds,
       device: params.deviceUserAgent ? { user_agent: params.deviceUserAgent } : undefined,
       website_url: params.websiteUrl,
-      return_url: params.returnUrl,
       region: params.region,
     };
 
